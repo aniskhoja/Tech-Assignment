@@ -1,35 +1,49 @@
 import { useEffect, useRef, useState } from 'react';
-import './App.css';
 import EmailInput from './components/EmailInput';
 import RadioInput from './components/RadioInput';
 import emailjs from '@emailjs/browser';
+import { validate } from './middleware/validate';
+import './App.css';
 
 function App() {
+  //state variable
   const initialValues = { InsurancePkg: null, Email: "", Age: "", Gender: "" };
   const [formValues, setFormValues] = useState(initialValues);
   const [status, setStatus] = useState(true);
+  const [errors, setErrors] = useState({});
 
+  //ref vairable
   const form = useRef();
+  const selectElement = useRef();
+
+  //submit
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(form.current)
-    //email
-    emailjs.sendForm('service_w7s5rpp', 'template_ezuti83', form.current, '4VbZqkuzu4iEZ4gZ_')
-      .then((result) => {
-          alert("message send")
-          console.log(result.text);
-      }, (error) => {
-          console.log(error.text);
-    });
+    setErrors(validate(formValues))
+    
+    //sending email
+    if (!errors.length > 0) {
+      emailjs.sendForm(process.env.REACT_APP_EMAIL_SERVICEID, process.env.REACT_APP_EMAIL_TEMP, form.current, process.env.REACT_APP_EMAIL_KEY)
+        .then((result) => {
+            alert("message send")
+            console.log(result.text);
+        }, (error) => {
+            console.log(error.text);
+      });
+    };
+
+    //clearing fields after submit
+    setFormValues(initialValues)
+    selectElement.current.value = "";
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value })
-    console.log(formValues)
   };
  
   useEffect(() => {
+    //enable fields once insurance is selected
     if (formValues.InsurancePkg !== null) {
       setStatus(false)
     }
@@ -37,6 +51,11 @@ function App() {
 
   return (
     <div className="app">
+      
+      { //error message
+        errors[0] !== undefined && <div className="errorLabel">
+          <p>{errors[0]}</p>
+      </div>}
       <form ref={form} onSubmit={handleSubmit}>
         <fieldset>
           <RadioInput
@@ -60,29 +79,31 @@ function App() {
             It even includes a protection against an alien invasion.
           </RadioInput>
         </fieldset>
-        <EmailInput
-          type="email"
-          label="Email"
-          setValue={formValues.Email}
-          changeEvent={handleChange}
-          status={status}
-          placeholder="Please enter your email" />
-        <EmailInput type="text"
-          label="Age"
-          setValue={formValues.Age}
-          changeEvent={handleChange}
-          status={status}
-          placeholder="Please enter your age" />
-        <label>Gender:</label>
-        <select name="Gender" disabled={status} onChange={handleChange}>
-          <option value="">Select gender</option>
-          <option value="Male">Male</option>
-          <option value="female">Female</option>
-        </select>
-        <button>Send</button>
+        <div className='emailInfo'>
+          <EmailInput
+            type="email"
+            label="Email"
+            setValue={formValues.Email}
+            changeEvent={handleChange}
+            status={status}
+            placeholder="Please enter your email" />
+          <EmailInput type="text"
+            label="Age"
+            setValue={formValues.Age}
+            changeEvent={handleChange}
+            status={status}
+            placeholder="Please enter your age" />
+          <label>Gender:</label>
+          <select ref={selectElement} name="Gender" disabled={status} onChange={handleChange}>
+            <option defaultChecked value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="female">Female</option>
+          </select>
+          <button disabled={status}>Send</button>
+        </div>
       </form>
     </div>
   );
-}
+};
 
 export default App;
