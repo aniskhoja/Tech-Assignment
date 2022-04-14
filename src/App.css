@@ -6,12 +6,15 @@
   height: 100vh;
 }
 form {
-  padding: 30px;
+  padding: 25px;
   border-radius: 15px;
   box-shadow: 0 0 20px #c3c3c367;
   background-color: aliceblue;
 }
 
+h3 {
+  font-size: 18px;
+}
 fieldset {
   border: none;
   margin: 0;
@@ -20,11 +23,11 @@ fieldset {
 
 input,
 select {
-  padding: 15px;
+  padding: 12px;
   box-shadow: 0 0 20px #c3c3c367;
   display: grid;
   width: 96%;
-  font-size: 19px;
+  font-size: 16px;
   border-radius: 8px;
   margin: 4px 0;
   border: none;
@@ -43,7 +46,7 @@ select:focus {
 .formradio {
   width: 600px;
   margin: 5px 0;
-  padding: 20px 20px 20px 60px;
+  padding: 15px 15px 15px 60px;
   border-radius: 10px;
   box-shadow: 0 0 20px #c3c3c367;
   position: relative;
@@ -52,7 +55,7 @@ select:focus {
 }
 
 label {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 500;
 }
 
@@ -103,7 +106,7 @@ h3 {
   margin: 0;
 }
 span {
-  font-size: large;
+  font-size: 16px;
   font-weight: 700;
 }
 .emailInfo {
@@ -141,6 +144,7 @@ button:disabled {
   box-shadow: 0 0 20px #c3c3c367;
   animation-name: alert;
   animation-duration: 1s;
+  z-index: 9999;
 }
 
 @keyframes alert {
