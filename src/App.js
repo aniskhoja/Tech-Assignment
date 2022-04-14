@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import EmailInput from './components/EmailInput';
+import { useEffect, useRef, useState, useMemo } from 'react';
+import InputComp from './components/InputComp';
 import RadioInput from './components/RadioInput';
 import emailjs from '@emailjs/browser';
 import { validate } from './middleware/validate';
@@ -11,6 +11,7 @@ function App() {
   const [formValues, setFormValues] = useState(initialValues);
   const [status, setStatus] = useState(true);
   const [errors, setErrors] = useState({});
+  const [isSubmit, setIsSubmit] = useState(false);
 
   //ref vairable
   const form = useRef();
@@ -20,21 +21,7 @@ function App() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setErrors(validate(formValues))
-    
-    //sending email
-    if (!errors.length > 0) {
-      emailjs.sendForm(process.env.REACT_APP_EMAIL_SERVICEID, process.env.REACT_APP_EMAIL_TEMP, form.current, process.env.REACT_APP_EMAIL_KEY)
-        .then((result) => {
-            alert("message send")
-            console.log(result.text);
-        }, (error) => {
-            console.log(error.text);
-      });
-    };
-
-    //clearing fields after submit
-    setFormValues(initialValues)
-    selectElement.current.value = "";
+    setIsSubmit(true)
   };
 
   const handleChange = (e) => {
@@ -43,21 +30,37 @@ function App() {
   };
  
   useEffect(() => {
+    if (errors.length === 0 && isSubmit) {
+      //sending email
+      emailjs.sendForm(process.env.REACT_APP_EMAIL_SERVICEID, process.env.REACT_APP_EMAIL_TEMP, form.current, process.env.REACT_APP_EMAIL_KEY)
+        .then((result) => {
+          alert("message send")
+          console.log(result.text);
+        }, (error) => {
+          console.log(error.text);
+        });
+      //clearing fields after submit
+      setFormValues(initialValues);
+      selectElement.current.value = "";
+
+      setIsSubmit(false)
+    };
+
     //enable fields once insurance is selected
     if (formValues.InsurancePkg !== null) {
       setStatus(false)
     }
-  }, [formValues.InsurancePkg]);
+  }, [formValues.InsurancePkg, initialValues, isSubmit, errors]);
 
   return (
     <div className="app">
-      
       { //error message
         errors[0] !== undefined && <div className="errorLabel">
           <p>{errors[0]}</p>
       </div>}
       <form ref={form} onSubmit={handleSubmit}>
         <fieldset>
+          {/* reusable radio component */}
           <RadioInput
             heading="Proteco Insurance"
             clickEvent={handleChange}
@@ -80,14 +83,15 @@ function App() {
           </RadioInput>
         </fieldset>
         <div className='emailInfo'>
-          <EmailInput
+          {/* reusable  */}
+          <InputComp
             type="email"
             label="Email"
             setValue={formValues.Email}
             changeEvent={handleChange}
             status={status}
             placeholder="Please enter your email" />
-          <EmailInput type="text"
+          <InputComp type="text"
             label="Age"
             setValue={formValues.Age}
             changeEvent={handleChange}
