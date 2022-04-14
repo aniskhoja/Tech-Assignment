@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-
 # Tech-Assignment
 
 ## Live
