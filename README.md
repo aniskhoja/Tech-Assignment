@@ -2,6 +2,10 @@
 
 # Tech-Assignment
 
+## Live
+
+https://steady-basbousa-4b3b0a.netlify.app/
+
 ### Project Details
 
 Hi, this project was fun to make everything you see in this project is made from scratch. The only lib used in this project is Emailjs.
