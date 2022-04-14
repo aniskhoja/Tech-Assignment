@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import InputComp from './components/InputComp';
 import RadioInput from './components/RadioInput';
 import emailjs from '@emailjs/browser';
@@ -7,7 +7,7 @@ import './App.css';
 
 function App() {
   //state variable
-  const initialValues = { InsurancePkg: null, Email: "", Age: "", Gender: "" };
+  const initialValues = useMemo(() => { return { InsurancePkg: null, Email: "", Age: "", Gender: "" } },[]) ;
   const [formValues, setFormValues] = useState(initialValues);
   const [status, setStatus] = useState(true);
   const [errors, setErrors] = useState({});
@@ -42,7 +42,6 @@ function App() {
       //clearing fields after submit
       setFormValues(initialValues);
       selectElement.current.value = "";
-
       setIsSubmit(false)
     };
 
